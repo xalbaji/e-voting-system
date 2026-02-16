@@ -13,8 +13,8 @@
   "db:seed": "ts-node src/scripts/seed-data.ts"
 },
   "engines": {
-    "node": "20.x",
-    "npm": "10.x"
+   "node": ">=18.0.0",
+  "npm": ">=8.0.0"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.13",
