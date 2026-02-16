@@ -1,31 +1,33 @@
 {
   "name": "e-voting-backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "E-Voting System Backend",
   "author": "",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "nest build",
-    "start": "node dist/main",
-    "start:dev": "nest start --watch",
-    "start:prod": "node dist/main",
-    "db:migrate": "ts-node src/scripts/seed-data.ts"
-  }
+  "build": "nest build",
+  "start": "node dist/main",
+  "start:dev": "nest start --watch",
+  "start:prod": "node dist/main",
+  "db:seed": "ts-node src/scripts/seed-data.ts"
+},
   "engines": {
     "node": "20.x",
     "npm": "10.x"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.13",
+    "@nestjs/config": "^4.0.0",
     "@nestjs/core": "^11.1.13",
-    "@nestjs/platform-express": "^11.1.13",
     "@nestjs/jwt": "^11.0.2",
     "@nestjs/passport": "^11.0.5",
-    "@nestjs/typeorm": "^11.0.0",
-    "@nestjs/config": "^4.0.0",
+    "@nestjs/platform-express": "^11.1.13",
     "@nestjs/serve-static": "^5.0.4",
+    "@nestjs/typeorm": "^11.0.0",
     "bcrypt": "^5.1.1",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
     "mysql2": "^3.9.1",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
