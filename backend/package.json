@@ -1,6 +1,6 @@
 {
-  "name": "nest-app",
-  "version": "0.0.1",
+  "name": "e-voting-backend",
+  "version": "1.0.0",
   "description": "",
   "author": "",
   "private": true,
@@ -11,6 +11,7 @@
     "start:dev": "nest start --watch",
     "start:prod": "node dist/main",
     "db:migrate": "ts-node src/scripts/seed-data.ts"
+    "db:seed": "ts-node src/scripts/seed-data.ts"
   },
   "engines": {
     "node": "20.x",

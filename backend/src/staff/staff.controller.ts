@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Between } from 'typeorm';
 import { User } from '../users/user.entity';
 import { Election } from '../elections/election.entity';
-import { Vote } from '../votes/vote.entity';
+import { Vote } from '../users/votes/vote.entity';
 import { AuditLog } from '../audit-logs/audit-log.entity';
 
 @Controller('staff')
