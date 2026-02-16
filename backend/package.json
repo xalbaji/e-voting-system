@@ -11,8 +11,7 @@
     "start:dev": "nest start --watch",
     "start:prod": "node dist/main",
     "db:migrate": "ts-node src/scripts/seed-data.ts"
-    "db:seed": "ts-node src/scripts/seed-data.ts"
-  },
+  }
   "engines": {
     "node": "20.x",
     "npm": "10.x"
