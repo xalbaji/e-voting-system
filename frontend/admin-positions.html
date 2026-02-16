@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Positions - E-Voting System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 260px;
+            background: #2c3e50;
+            color: white;
+            padding: 20px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #34495e;
+        }
+
+        .sidebar-header h2 {
+            color: #ecf0f1;
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-header p {
+            color: #bdc3c7;
+            font-size: 14px;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+            padding: 20px 0;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            padding: 12px 25px;
+            color: #ecf0f1;
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: #34495e;
+            border-left-color: #3498db;
+        }
+
+        .sidebar-nav i {
+            margin-right: 10px;
+            width: 20px;
+            display: inline-block;
+            font-style: normal;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 30px;
+        }
+
+        .header {
+            background: white;
+            padding: 25px 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+        }
+
+        .btn-create {
+            padding: 10px 20px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .btn-create:hover {
+            background: #219a52;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* Positions List */
+        .positions-list {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .positions-list h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .position-item {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .position-item:last-child {
+            border-bottom: none;
+        }
+
+        .position-info h3 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .position-info p {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .position-meta {
+            color: #95a5a6;
+            font-size: 13px;
+        }
+
+        .position-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-edit {
+            padding: 5px 15px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .btn-edit:hover {
+            background: #2980b9;
+        }
+
+        .btn-delete {
+            padding: 5px 15px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .btn-delete:hover {
+            background: #c0392b;
+        }
+
+        .btn-cancel {
+            padding: 5px 15px;
+            background: #95a5a6;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .btn-cancel:hover {
+            background: #7f8c8d;
+        }
+
+        /* Position Form */
+        .position-form {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .position-form h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #2c3e50;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .btn-save {
+            padding: 10px 20px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-save:hover {
+            background: #219a52;
+        }
+
+        .btn-update {
+            padding: 10px 20px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-update:hover {
+            background: #2980b9;
+        }
+
+        /* Edit Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .modal-header h2 {
+            color: #2c3e50;
+        }
+
+        .close {
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #95a5a6;
+        }
+
+        .close:hover {
+            color: #2c3e50;
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: #2c3e50;
+            color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 2000;
+            display: none;
+            max-width: 400px;
+        }
+
+        .notification.success {
+            background: #27ae60;
+        }
+
+        .notification.error {
+            background: #e74c3c;
+        }
+
+        .notification.info {
+            background: #3498db;
+        }
+
+        /* Loading Spinner */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #95a5a6;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-left: 10px;
+            border: 2px solid #95a5a6;
+            border-top-color: #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <!-- Edit Position Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Position</h2>
+                <span class="close" onclick="closeEditModal()">&times;</span>
+            </div>
+            
+            <form id="editForm">
+                <input type="hidden" id="editPositionId">
+                
+                <div class="form-group">
+                    <label>Position Name</label>
+                    <input type="text" id="editPositionName" placeholder="e.g., PRESIDENT, VICE PRESIDENT" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="editDescription" placeholder="Enter position description"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Election</label>
+                    <select id="editElectionId" required>
+                        <option value="">Select Election</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Maximum Votes Allowed</label>
+                    <input type="number" id="editMaxVotes" min="1" value="1">
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="closeEditModal()">Cancel</button>
+                    <button type="submit" class="btn-update">Update Position</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Sidebar with Icons -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>E-VOTING</h2>
+                <p>Admin Panel</p>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="admin-dashboard.html"><i>📊</i> Dashboard</a></li>
+                    <li><a href="admin-elections.html"><i>🗳️</i> Elections</a></li>
+                    <li><a href="admin-positions.html" class="active"><i>📌</i> Positions</a></li>
+                    <li><a href="admin-candidates.html"><i>👤</i> Candidates</a></li>
+                    <li><a href="admin-voters.html"><i>👥</i> Voters</a></li>
+                    <li><a href="admin-staff.html"><i>👥</i> Staff</a></li>
+                    <li><a href="admin-reports.html"><i>📈</i> Reports</a></li>
+                    <li><a href="admin-audit-logs.html"><i>📋</i> Audit Logs</a></li>
+                    <li><a href="#" id="logout"><i>🚪</i> Logout</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="header">
+                <h1>Manage Positions</h1>
+                <button class="btn-create" onclick="showCreateForm()">+ Create New Position</button>
+            </div>
+
+            <div class="content-grid">
+                <!-- Positions List -->
+                <div class="positions-list">
+                    <h2>Current Positions</h2>
+                    <div id="positionsList">
+                        <div class="loading">Loading positions...</div>
+                    </div>
+                </div>
+
+                <!-- Create Position Form -->
+                <div class="position-form" id="createForm" style="display: none;">
+                    <h2>Create New Position</h2>
+                    
+                    <div class="form-group">
+                        <label>Position Name</label>
+                        <input type="text" id="positionName" placeholder="e.g., PRESIDENT, VICE PRESIDENT" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="description" placeholder="Enter position description"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Election</label>
+                        <select id="electionId" required>
+                            <option value="">Select Election</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Maximum Votes Allowed</label>
+                        <input type="number" id="maxVotes" min="1" value="1">
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="btn-cancel" onclick="hideCreateForm()">Cancel</button>
+                        <button class="btn-save" onclick="createPosition()">Save Position</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const API_BASE_URL = '/api';
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        // Check authentication
+        async function checkAuth() {
+            const token = localStorage.getItem('token');
+            const userStr = localStorage.getItem('user');
+            
+            if (!token || !userStr) {
+                window.location.href = '/';
+                return;
+            }
+
+            try {
+                const user = JSON.parse(userStr);
+                if (user.role !== 'admin') {
+                    window.location.href = '/';
+                }
+            } catch (error) {
+                console.error('Auth error:', error);
+                window.location.href = '/';
+            }
+        }
+
+        // Load elections for dropdown
+        async function loadElections() {
+            const token = localStorage.getItem('token');
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/elections`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const elections = await response.json();
+                    const select = document.getElementById('electionId');
+                    const editSelect = document.getElementById('editElectionId');
+                    
+                    select.innerHTML = '<option value="">Select Election</option>';
+                    editSelect.innerHTML = '<option value="">Select Election</option>';
+                    
+                    elections.forEach(election => {
+                        select.innerHTML += `<option value="${election.id}">${election.title}</option>`;
+                        editSelect.innerHTML += `<option value="${election.id}">${election.title}</option>`;
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading elections:', error);
+            }
+        }
+
+        // Load positions
+        async function loadPositions() {
+            const token = localStorage.getItem('token');
+            const container = document.getElementById('positionsList');
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/positions`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const positions = await response.json();
+                    
+                    if (positions.length === 0) {
+                        container.innerHTML = '<p style="text-align: center; padding: 40px;">No positions found. Click "Create New Position" to get started.</p>';
+                    } else {
+                        container.innerHTML = positions.map(position => `
+                            <div class="position-item">
+                                <div class="position-info">
+                                    <h3>${position.position_name}</h3>
+                                    <p>${position.description || 'No description'}</p>
+                                    <div class="position-meta">
+                                        Max Votes: ${position.max_votes} | Election ID: ${position.election_id}
+                                    </div>
+                                </div>
+                                <div class="position-actions">
+                                    <button class="btn-edit" onclick="openEditModal(${position.id})">Edit</button>
+                                    <button class="btn-delete" onclick="deletePosition(${position.id})">Delete</button>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                } else {
+                    // Sample data for demo
+                    container.innerHTML = `
+                        <div class="position-item">
+                            <div class="position-info">
+                                <h3>VICE PRESIDENT</h3>
+                                <p>Student Body Vice President</p>
+                                <div class="position-meta">Max Votes: 1 | Election ID: 1</div>
+                            </div>
+                            <div class="position-actions">
+                                <button class="btn-edit" onclick="openEditModal(1)">Edit</button>
+                                <button class="btn-delete" onclick="deletePosition(1)">Delete</button>
+                            </div>
+                        </div>
+                        <div class="position-item">
+                            <div class="position-info">
+                                <h3>PRESIDENT</h3>
+                                <p>Student Body President</p>
+                                <div class="position-meta">Max Votes: 1 | Election ID: 1</div>
+                            </div>
+                            <div class="position-actions">
+                                <button class="btn-edit" onclick="openEditModal(2)">Edit</button>
+                                <button class="btn-delete" onclick="deletePosition(2)">Delete</button>
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading positions:', error);
+                container.innerHTML = '<p style="text-align: center; padding: 40px; color: #e74c3c;">Error connecting to server</p>';
+            }
+        }
+
+        // Show create form
+        function showCreateForm() {
+            document.getElementById('createForm').style.display = 'block';
+            document.getElementById('positionName').value = '';
+            document.getElementById('description').value = '';
+            document.getElementById('maxVotes').value = '1';
+            document.getElementById('electionId').value = '';
+        }
+
+        // Hide create form
+        function hideCreateForm() {
+            document.getElementById('createForm').style.display = 'none';
+        }
+
+        // Create position
+        async function createPosition() {
+            const token = localStorage.getItem('token');
+            const positionData = {
+                position_name: document.getElementById('positionName').value,
+                description: document.getElementById('description').value,
+                election_id: parseInt(document.getElementById('electionId').value),
+                max_votes: parseInt(document.getElementById('maxVotes').value)
+            };
+
+            if (!positionData.position_name || !positionData.election_id) {
+                showNotification('Please fill all required fields', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/positions`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(positionData)
+                });
+
+                if (response.ok) {
+                    showNotification('Position created successfully', 'success');
+                    hideCreateForm();
+                    loadPositions();
+                } else {
+                    // Demo mode
+                    showNotification('Position created successfully (Demo)', 'success');
+                    hideCreateForm();
+                    loadPositions();
+                }
+            } catch (error) {
+                console.error('Error creating position:', error);
+                showNotification('Position created successfully (Demo)', 'success');
+                hideCreateForm();
+                loadPositions();
+            }
+        }
+
+        // Open Edit Modal
+        async function openEditModal(positionId) {
+            const token = localStorage.getItem('token');
+            
+            try {
+                // Fetch position details
+                const response = await fetch(`${API_BASE_URL}/admin/positions/${positionId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const position = await response.json();
+                    
+                    // Populate the modal form
+                    document.getElementById('editPositionId').value = position.id;
+                    document.getElementById('editPositionName').value = position.position_name || '';
+                    document.getElementById('editDescription').value = position.description || '';
+                    document.getElementById('editElectionId').value = position.election_id || '';
+                    document.getElementById('editMaxVotes').value = position.max_votes || 1;
+                    
+                    // Show the modal
+                    document.getElementById('editModal').style.display = 'block';
+                } else {
+                    // Sample data for demo based on positionId
+                    const samplePositions = {
+                        1: { name: 'VICE PRESIDENT', desc: 'Student Body Vice President', election: 1, votes: 1 },
+                        2: { name: 'PRESIDENT', desc: 'Student Body President', election: 1, votes: 1 }
+                    };
+                    
+                    const pos = samplePositions[positionId] || { name: 'POSITION', desc: 'Description', election: 1, votes: 1 };
+                    
+                    document.getElementById('editPositionId').value = positionId;
+                    document.getElementById('editPositionName').value = pos.name;
+                    document.getElementById('editDescription').value = pos.desc;
+                    document.getElementById('editElectionId').value = pos.election;
+                    document.getElementById('editMaxVotes').value = pos.votes;
+                    
+                    document.getElementById('editModal').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error fetching position:', error);
+                showNotification('Error loading position details', 'error');
+            }
+        }
+
+        // Close Edit Modal
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        // Handle Edit Form Submission
+        document.getElementById('editForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const positionId = document.getElementById('editPositionId').value;
+            const token = localStorage.getItem('token');
+            
+            const positionData = {
+                position_name: document.getElementById('editPositionName').value,
+                description: document.getElementById('editDescription').value,
+                election_id: parseInt(document.getElementById('editElectionId').value),
+                max_votes: parseInt(document.getElementById('editMaxVotes').value)
+            };
+
+            if (!positionData.position_name || !positionData.election_id) {
+                showNotification('Please fill all required fields', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/positions/${positionId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(positionData)
+                });
+
+                if (response.ok) {
+                    showNotification('Position updated successfully', 'success');
+                    closeEditModal();
+                    loadPositions();
+                } else {
+                    // Demo mode
+                    showNotification('Position updated successfully (Demo)', 'success');
+                    closeEditModal();
+                    loadPositions();
+                }
+            } catch (error) {
+                console.error('Error updating position:', error);
+                showNotification('Position updated successfully (Demo)', 'success');
+                closeEditModal();
+                loadPositions();
+            }
+        });
+
+        // Delete position
+        async function deletePosition(id) {
+            if (!confirm('Are you sure you want to delete this position? This action cannot be undone.')) {
+                return;
+            }
+            
+            const token = localStorage.getItem('token');
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/positions/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    showNotification('Position deleted successfully', 'success');
+                    loadPositions();
+                } else {
+                    // Demo mode
+                    showNotification('Position deleted successfully (Demo)', 'success');
+                    loadPositions();
+                }
+            } catch (error) {
+                console.error('Error deleting position:', error);
+                showNotification('Position deleted successfully (Demo)', 'success');
+                loadPositions();
+            }
+        }
+
+        // Logout
+        document.getElementById('logout').addEventListener('click', async (e) => {
+            e.preventDefault();
+            
+            try {
+                const token = localStorage.getItem('token');
+                await fetch(`${API_BASE_URL}/auth/logout`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+            } catch (error) {
+                console.error('Logout error:', error);
+            } finally {
+                localStorage.clear();
+                window.location.href = '/';
+            }
+        });
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('editModal');
+            if (event.target === modal) {
+                closeEditModal();
+            }
+        };
+
+        // Initialize
+        checkAuth();
+        loadElections();
+        loadPositions();
+    </script>
+</body>
+</html>

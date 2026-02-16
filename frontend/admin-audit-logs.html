@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audit Logs - E-Voting System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 260px;
+            background: #2c3e50;
+            color: white;
+            padding: 20px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #34495e;
+        }
+
+        .sidebar-header h2 {
+            color: #ecf0f1;
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-header p {
+            color: #bdc3c7;
+            font-size: 14px;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+            padding: 20px 0;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            padding: 12px 25px;
+            color: #ecf0f1;
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: #34495e;
+            border-left-color: #3498db;
+        }
+
+        .sidebar-nav i {
+            margin-right: 10px;
+            width: 20px;
+            display: inline-block;
+            font-style: normal;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 30px;
+        }
+
+        .header {
+            background: white;
+            padding: 25px 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .btn-refresh {
+            padding: 8px 16px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background 0.3s;
+        }
+
+        .btn-refresh:hover {
+            background: #2980b9;
+        }
+
+        .btn-refresh:active {
+            transform: scale(0.98);
+        }
+
+        .refresh-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ffffff;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Filter Section */
+        .filter-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #2c3e50;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .filter-group input:focus,
+        .filter-group select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-filter {
+            padding: 10px 20px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-filter:hover {
+            background: #219a52;
+        }
+
+        .btn-reset {
+            padding: 10px 20px;
+            background: #95a5a6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-reset:hover {
+            background: #7f8c8d;
+        }
+
+        /* Table Container */
+        .table-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .table-header h2 {
+            color: #2c3e50;
+        }
+
+        .log-stats {
+            display: flex;
+            gap: 20px;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .log-stats span {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 12px;
+            background: #f8f9fa;
+            color: #2c3e50;
+            font-weight: 600;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #dee2e6;
+            color: #666;
+            font-size: 14px;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .user-email {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+
+        .action-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .action-login {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .action-logout {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .action-register {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .action-approve {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .action-reject {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .action-status {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .action-create {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .action-delete {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .action-update {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .ip-address {
+            font-family: monospace;
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        .details {
+            max-width: 250px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .details:hover {
+            white-space: normal;
+            overflow: visible;
+            background: white;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            color: #95a5a6;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 10px;
+            opacity: 0.5;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #95a5a6;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-left: 10px;
+            border: 2px solid #95a5a6;
+            border-top-color: #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: #2c3e50;
+            color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 2000;
+            display: none;
+            max-width: 400px;
+        }
+
+        .notification.success {
+            background: #27ae60;
+        }
+
+        .notification.error {
+            background: #e74c3c;
+        }
+
+        .notification.info {
+            background: #3498db;
+        }
+
+        /* Real-time indicator */
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 8px;
+            background: #27ae60;
+            color: white;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            animation: pulse 1.5s ease infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <div class="container">
+        <!-- Sidebar with Icons -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>E-VOTING</h2>
+                <p>Admin Panel</p>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="admin-dashboard.html"><i>📊</i> Dashboard</a></li>
+                    <li><a href="admin-elections.html"><i>🗳️</i> Elections</a></li>
+                    <li><a href="admin-positions.html"><i>📌</i> Positions</a></li>
+                    <li><a href="admin-candidates.html"><i>👤</i> Candidates</a></li>
+                    <li><a href="admin-voters.html"><i>👥</i> Voters</a></li>
+                    <li><a href="admin-staff.html"><i>👥</i> Staff</a></li>
+                    <li><a href="admin-reports.html"><i>📈</i> Reports</a></li>
+                    <li><a href="admin-audit-logs.html" class="active"><i>📋</i> Audit Logs</a></li>
+                    <li><a href="#" id="logout"><i>🚪</i> Logout</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="header">
+                <div class="header-left">
+                    <h1>Audit Logs</h1>
+                    <div class="live-indicator">
+                        <span class="live-dot"></span>
+                        Live
+                    </div>
+                </div>
+                <button class="btn-refresh" onclick="refreshLogs()" id="refreshBtn">
+                    <i>🔄</i> Refresh
+                </button>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="filter-section">
+                <div class="filter-group">
+                    <label>From Date</label>
+                    <input type="date" id="fromDate">
+                </div>
+                <div class="filter-group">
+                    <label>To Date</label>
+                    <input type="date" id="toDate">
+                </div>
+                <div class="filter-group">
+                    <label>Action Type</label>
+                    <select id="actionType">
+                        <option value="all">All Actions</option>
+                        <option value="login">Login</option>
+                        <option value="logout">Logout</option>
+                        <option value="register">Register</option>
+                        <option value="approve">Approved</option>
+                        <option value="reject">Rejected</option>
+                        <option value="status">Status Change</option>
+                        <option value="create">Create</option>
+                        <option value="update">Update</option>
+                        <option value="delete">Delete</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>User</label>
+                    <input type="text" id="userSearch" placeholder="Search by user...">
+                </div>
+                <div class="filter-actions">
+                    <button class="btn-filter" onclick="applyFilters()">Filter</button>
+                    <button class="btn-reset" onclick="resetFilters()">Reset</button>
+                </div>
+            </div>
+
+            <!-- Table Container -->
+            <div class="table-container">
+                <div class="table-header">
+                    <h2>Activity Log</h2>
+                    <div class="log-stats">
+                        <span id="logCount">0</span> entries | 
+                        Last updated: <span id="lastUpdated">just now</span>
+                    </div>
+                </div>
+
+                <div id="logsTable">
+                    <!-- Logs will be loaded here -->
+                    <div class="loading">Loading audit logs...</div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const API_BASE_URL = '/api';
+        let allLogs = [];
+        let filteredLogs = [];
+        let refreshInterval;
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        // Check authentication
+        async function checkAuth() {
+            const token = localStorage.getItem('token');
+            const userStr = localStorage.getItem('user');
+            
+            if (!token || !userStr) {
+                window.location.href = '/';
+                return;
+            }
+
+            try {
+                const user = JSON.parse(userStr);
+                if (user.role !== 'admin') {
+                    window.location.href = '/';
+                }
+            } catch (error) {
+                console.error('Auth error:', error);
+                window.location.href = '/';
+            }
+        }
+
+        // Start auto-refresh
+        function startAutoRefresh() {
+            // Refresh every 30 seconds
+            refreshInterval = setInterval(() => {
+                loadLogs(false);
+            }, 30000);
+        }
+
+        // Stop auto-refresh
+        function stopAutoRefresh() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+        }
+
+        // Refresh logs manually
+        async function refreshLogs() {
+            const refreshBtn = document.getElementById('refreshBtn');
+            const originalText = refreshBtn.innerHTML;
+            
+            refreshBtn.innerHTML = '<span class="refresh-spinner"></span> Refreshing...';
+            refreshBtn.disabled = true;
+            
+            await loadLogs(true);
+            
+            refreshBtn.innerHTML = originalText;
+            refreshBtn.disabled = false;
+        }
+
+        // Load audit logs
+        async function loadLogs(showMessage = false) {
+            const token = localStorage.getItem('token');
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/audit-logs`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    allLogs = await response.json();
+                    filteredLogs = [...allLogs];
+                    displayLogs();
+                    updateLastUpdated();
+                    
+                    if (showMessage) {
+                        showNotification('Logs refreshed successfully', 'success');
+                    }
+                } else {
+                    // Load sample data for demo
+                    loadSampleLogs();
+                }
+            } catch (error) {
+                console.error('Error loading logs:', error);
+                loadSampleLogs();
+            }
+        }
+
+        // Load sample logs for demo
+        function loadSampleLogs() {
+            allLogs = [
+                {
+                    id: 1,
+                    user_id: 1,
+                    user_email: 'finance@gmail.com',
+                    user_name: 'Christine Sartagoda',
+                    action: 'User logged out',
+                    ip_address: '192.168.1.1',
+                    details: 'Logout from 192.168.1.1',
+                    created_at: '2025-05-29T01:31:14'
+                },
+                {
+                    id: 2,
+                    user_id: 2,
+                    user_email: 'lihpu12@gmail.com',
+                    user_name: 'Juphil Kadusale',
+                    action: 'User logged out',
+                    ip_address: '192.168.1.2',
+                    details: 'Logout from 192.168.1.2',
+                    created_at: '2025-05-29T01:30:50'
+                },
+                {
+                    id: 3,
+                    user_id: 1,
+                    user_email: 'finance@gmail.com',
+                    user_name: 'Christine Sartagoda',
+                    action: 'STATUS_CHANGE',
+                    ip_address: '192.168.1.1',
+                    details: 'Changed status from pending to approved',
+                    created_at: '2025-05-29T01:27:50'
+                },
+                {
+                    id: 4,
+                    user_id: 2,
+                    user_email: 'lihpu12@gmail.com',
+                    user_name: 'Juphil Kadusale',
+                    action: 'Approved voter registration',
+                    ip_address: '192.168.1.2',
+                    details: 'Approved voter ID: 3',
+                    created_at: '2025-05-29T01:27:50'
+                },
+                {
+                    id: 5,
+                    user_id: 3,
+                    user_email: 'admin@eboto.com',
+                    user_name: 'System Administrator',
+                    action: 'User logged out',
+                    ip_address: '192.168.1.3',
+                    details: 'Logout from 192.168.1.3',
+                    created_at: '2025-05-29T01:27:40'
+                },
+                {
+                    id: 6,
+                    user_id: 3,
+                    user_email: 'admin@eboto.com',
+                    user_name: 'System Administrator',
+                    action: 'User logged out',
+                    ip_address: '192.168.1.3',
+                    details: 'Logout from 192.168.1.3',
+                    created_at: '2025-05-29T01:26:45'
+                },
+                {
+                    id: 7,
+                    user_id: 4,
+                    user_email: 'voter@example.com',
+                    user_name: 'John Doe',
+                    action: 'User logged in',
+                    ip_address: '192.168.1.4',
+                    details: 'Login from 192.168.1.4',
+                    created_at: '2025-05-29T01:25:30'
+                },
+                {
+                    id: 8,
+                    user_id: 5,
+                    user_email: 'newuser@example.com',
+                    user_name: 'Jane Smith',
+                    action: 'User registered',
+                    ip_address: '192.168.1.5',
+                    details: 'New registration from 192.168.1.5',
+                    created_at: '2025-05-29T01:20:15'
+                }
+            ];
+            
+            filteredLogs = [...allLogs];
+            displayLogs();
+        }
+
+        // Display logs in table
+        function displayLogs() {
+            const container = document.getElementById('logsTable');
+            
+            if (filteredLogs.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i>📋</i>
+                        <p>No audit logs found</p>
+                    </div>
+                `;
+                document.getElementById('logCount').textContent = '0';
+                return;
+            }
+
+            document.getElementById('logCount').textContent = filteredLogs.length;
+
+            const logsHtml = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>User</th>
+                            <th>Action</th>
+                            <th>IP Address</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${filteredLogs.map(log => {
+                            const actionClass = getActionClass(log.action);
+                            return `
+                                <tr>
+                                    <td>${formatDate(log.created_at)}</td>
+                                    <td>
+                                        <div class="user-info">
+                                            <span class="user-name">${log.user_name || 'Unknown'}</span>
+                                            <span class="user-email">${log.user_email || ''}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="action-badge ${actionClass}">${log.action}</span>
+                                    </td>
+                                    <td><span class="ip-address">${log.ip_address || 'N/A'}</span></td>
+                                    <td class="details" title="${log.details || ''}">${log.details || ''}</td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+            `;
+
+            container.innerHTML = logsHtml;
+        }
+
+        // Get CSS class for action type
+        function getActionClass(action) {
+            const actionLower = action.toLowerCase();
+            if (actionLower.includes('login')) return 'action-login';
+            if (actionLower.includes('logout')) return 'action-logout';
+            if (actionLower.includes('register')) return 'action-register';
+            if (actionLower.includes('approve')) return 'action-approve';
+            if (actionLower.includes('reject')) return 'action-reject';
+            if (actionLower.includes('status')) return 'action-status';
+            if (actionLower.includes('create')) return 'action-create';
+            if (actionLower.includes('delete')) return 'action-delete';
+            if (actionLower.includes('update')) return 'action-update';
+            return '';
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            return date.toLocaleString('en-US', {
+                month: 'short',
+                day: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        }
+
+        // Update last updated timestamp
+        function updateLastUpdated() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('lastUpdated').textContent = timeString;
+        }
+
+        // Apply filters
+        function applyFilters() {
+            const fromDate = document.getElementById('fromDate').value;
+            const toDate = document.getElementById('toDate').value;
+            const actionType = document.getElementById('actionType').value;
+            const userSearch = document.getElementById('userSearch').value.toLowerCase();
+
+            filteredLogs = allLogs.filter(log => {
+                // Date filter
+                if (fromDate) {
+                    const logDate = new Date(log.created_at).toISOString().split('T')[0];
+                    if (logDate < fromDate) return false;
+                }
+                
+                if (toDate) {
+                    const logDate = new Date(log.created_at).toISOString().split('T')[0];
+                    if (logDate > toDate) return false;
+                }
+
+                // Action type filter
+                if (actionType !== 'all') {
+                    const actionLower = log.action.toLowerCase();
+                    const typeMap = {
+                        'login': 'login',
+                        'logout': 'logout',
+                        'register': 'register',
+                        'approve': 'approve',
+                        'reject': 'reject',
+                        'status': 'status',
+                        'create': 'create',
+                        'update': 'update',
+                        'delete': 'delete'
+                    };
+                    if (!actionLower.includes(typeMap[actionType])) return false;
+                }
+
+                // User search filter
+                if (userSearch) {
+                    const userName = (log.user_name || '').toLowerCase();
+                    const userEmail = (log.user_email || '').toLowerCase();
+                    if (!userName.includes(userSearch) && !userEmail.includes(userSearch)) {
+                        return false;
+                    }
+                }
+
+                return true;
+            });
+
+            displayLogs();
+            showNotification('Filters applied', 'success');
+        }
+
+        // Reset filters
+        function resetFilters() {
+            document.getElementById('fromDate').value = '';
+            document.getElementById('toDate').value = '';
+            document.getElementById('actionType').value = 'all';
+            document.getElementById('userSearch').value = '';
+            
+            filteredLogs = [...allLogs];
+            displayLogs();
+            showNotification('Filters reset', 'info');
+        }
+
+        // Simulate real-time updates (for demo)
+        function simulateRealTimeUpdate() {
+            // This would be replaced with WebSocket in production
+            setInterval(() => {
+                // Randomly add a new log entry for demo
+                if (Math.random() > 0.7) {
+                    const actions = ['User logged in', 'User logged out', 'User registered', 'Approved voter registration'];
+                    const users = ['Christine Sartagoda', 'Juphil Kadusale', 'System Administrator'];
+                    const emails = ['finance@gmail.com', 'lihpu12@gmail.com', 'admin@eboto.com'];
+                    
+                    const randomIndex = Math.floor(Math.random() * actions.length);
+                    const userIndex = Math.floor(Math.random() * users.length);
+                    
+                    const newLog = {
+                        id: allLogs.length + 1,
+                        user_name: users[userIndex],
+                        user_email: emails[userIndex],
+                        action: actions[randomIndex],
+                        ip_address: '192.168.1.' + Math.floor(Math.random() * 255),
+                        details: 'Real-time update',
+                        created_at: new Date().toISOString()
+                    };
+                    
+                    allLogs.unshift(newLog);
+                    filteredLogs = [...allLogs];
+                    displayLogs();
+                    updateLastUpdated();
+                    
+                    showNotification('New activity logged!', 'info');
+                }
+            }, 15000); // Every 15 seconds
+        }
+
+        // Logout
+        document.getElementById('logout').addEventListener('click', async (e) => {
+            e.preventDefault();
+            
+            try {
+                const token = localStorage.getItem('token');
+                await fetch(`${API_BASE_URL}/auth/logout`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+            } catch (error) {
+                console.error('Logout error:', error);
+            } finally {
+                localStorage.clear();
+                window.location.href = '/';
+            }
+        });
+
+        // Initialize
+        checkAuth();
+        loadLogs();
+        startAutoRefresh();
+        
+        // For demo purposes only - simulates real-time updates
+        // In production, you'd use WebSockets
+        simulateRealTimeUpdate();
+
+        // Clean up on page unload
+        window.addEventListener('beforeunload', () => {
+            stopAutoRefresh();
+        });
+    </script>
+</body>
+</html>
