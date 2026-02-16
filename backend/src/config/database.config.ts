@@ -16,5 +16,10 @@ export const databaseConfig: TypeOrmModuleOptions = {
   entities: [User, Election, Position, Candidate, Vote, AuditLog],
   synchronize: true,
   logging: false,
+extra: {
+    connectionLimit: 10,
+    connectTimeout: 30000, // 30 seconds
+  },
+  // SSL configuration for Railway
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
 };
