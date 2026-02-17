@@ -3,9 +3,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 // Remove this import, no longer needed
 // import { databaseConfig } from './config/database.config';
+
 
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';

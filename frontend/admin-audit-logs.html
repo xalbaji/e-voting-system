@@ -917,12 +917,32 @@
             }, 15000); // Every 15 seconds
         }
 
-        // Simple Logout
-document.getElementById('logout').addEventListener('click', (e) => {
-    e.preventDefault();          // Prevent default button behavior
-    localStorage.removeItem('token'); // Remove the token
-    window.location.href = '/';       // Redirect to homepage
+ // Frontend logout (works with or without backend)
+document.getElementById('logout').addEventListener('click', async (e) => {
+    e.preventDefault();
+
+    const token = localStorage.getItem('token');
+
+    if (token) {
+        try {
+            // Make API call to logout, if token exists
+            await fetch(`${API_BASE_URL}/api/auth/logout`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+        } catch (err) {
+            console.warn('Logout API failed, continuing anyway:', err);
+        }
+    }
+
+    // Always clear local storage and redirect
+    localStorage.removeItem('token');
+    window.location.href = '/';
 });
+
 
 
         // Initialize

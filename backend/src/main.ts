@@ -3,53 +3,40 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
-  console.log('🚀 Starting application...');
-  
-  // Log all environment variables (without exposing passwords fully)
-  console.log('🔍 Environment Variables:');
-  console.log('NODE_ENV:', process.env.NODE_ENV);
-  console.log('PORT:', process.env.PORT);
-  console.log('--- Database Variables ---');
-  console.log('MYSQLHOST:', process.env.MYSQLHOST);
-  console.log('MYSQLPORT:', process.env.MYSQLPORT || '❌ NOT SET');
-  console.log('MYSQLUSER:', process.env.MYSQLUSER);
-  console.log('MYSQLDATABASE:', process.env.MYSQLDATABASE || '❌ NOT SET');
-  console.log('MYSQLPASSWORD:', process.env.MYSQLPASSWORD);
-  console.log('DB_HOST:', process.env.DB_HOST || '❌ NOT SET');
-  console.log('DB_PORT:', process.env.DB_PORT || '❌ NOT SET');
-  console.log('------------------------');
+  console.log('🚀 Starting E-Voting application...');
 
   try {
     const app = await NestFactory.create(AppModule);
-    
+
+    // Enable CORS and global validation
     app.enableCors();
     app.useGlobalPipes(new ValidationPipe());
+    
+    // Set API prefix
     app.setGlobalPrefix('api');
-    
-    // Simple root endpoint
-    app.getHttpAdapter().get('/', (req, res) => {
-      res.json({ 
-        message: 'E-Voting API is running',
-        timestamp: new Date().toISOString()
-      });
-    });
-    
+
+    // Optional: simple root endpoint
+   // app.getHttpAdapter().get('/', (req, res) => {
+    //  res.json({
+     //   message: 'E-Voting API is running locally',
+      //  timestamp: new Date().toISOString()
+    //  });
+   // });
+
+    // Use local port or default to 3000
     const port = process.env.PORT || 3000;
     await app.listen(port);
-    
-    console.log(`✅ Server successfully started on port ${port}`);
+
+    console.log(`✅ Server started on port ${port}`);
     console.log(`📡 API root: http://localhost:${port}/api`);
     
   } catch (error) {
-    console.error('❌ Failed to start application:');
-    console.error('Error name:', error.name);
-    console.error('Error message:', error.message);
-    console.error('Error stack:', error.stack);
+    console.error('❌ Failed to start application:', error);
     process.exit(1);
   }
 }
 
-// Handle uncaught exceptions
+// Optional: handle uncaught errors
 process.on('uncaughtException', (error) => {
   console.error('❌ Uncaught Exception:', error);
   process.exit(1);
