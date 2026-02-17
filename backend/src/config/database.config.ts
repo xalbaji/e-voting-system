@@ -6,23 +6,14 @@ import { Candidate } from '../candidates/candidate.entity';
 import { Vote } from '../votes/vote.entity';
 import { AuditLog } from '../audit-logs/audit-log.entity';
 
-export const databaseConfig: TypeOrmModuleOptions = {
+export const databaseConfig = {
   type: 'mysql',
-  host: process.env.MYSQLHOST,
-  port: parseInt(process.env.MYSQLPORT ?? '3306', 10),
-  username: process.env.MYSQLUSER || process.env.DB_USERNAME || 'root',
-  password: process.env.MYSQLPASSWORD || process.env.DB_PASSWORD || '',
-  database: process.env.MYSQLDATABASE,
-  entities: [User, Election, Position, Candidate, Vote, AuditLog],
-  synchronize: false,
-  logging: false,
-  retryAttempts: 10,
-  retryDelay: 3000,
-  ssl:
-    process.env.NODE_ENV === 'production'
-      ? { rejectUnauthorized: false }
-      : false,
-  extra: {
-    connectionLimit: 5,
-  },
+  host: process.env.DB_HOST,
+  port: Number(process.env.DB_PORT),
+  username: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  synchronize: true, // optional, use carefully on prod
+  autoLoadEntities: true,
 };
+
