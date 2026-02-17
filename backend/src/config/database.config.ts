@@ -14,6 +14,5 @@ export const databaseConfig = {
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-  synchronize: false, // Set to false in production for safety
+  synchronize: true, // <-- important
 };
-

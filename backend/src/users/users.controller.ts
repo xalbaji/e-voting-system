@@ -16,7 +16,7 @@ export class UsersController {
   async getProfile(@Req() req) {
     const user = await this.userRepository.findOne({
       where: { id: req.user.id },
-      select: ['id', 'first_name', 'last_name', 'email', 'voter_id', 'role', 'status', 'created_at']
+      select: ['id', 'first_name', 'last_name', 'email',, 'role', 'status', 'created_at']
     });
     
     if (!user) return { error: 'User not found' };
@@ -33,7 +33,7 @@ export class UsersController {
     
     return this.userRepository.findOne({
       where: { id: req.user.id },
-      select: ['id', 'first_name', 'last_name', 'email', 'voter_id', 'role', 'status']
+      select: ['id', 'first_name', 'last_name', 'email', 'role', 'status']
     });
   }
 }
