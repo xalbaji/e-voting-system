@@ -28,9 +28,11 @@ export class AuthController {
   }
 
   @Post('logout')
-  @UseGuards(AuthGuard('jwt'))
-  async logout(@Req() req) {
+async logout(@Req() req) {
+  if (req.user) {
     const ipAddress = req.ip || req.connection.remoteAddress;
     return this.authService.logout(req.user.id, req.user.email, ipAddress);
   }
+  return { message: 'Logged out successfully' };
+}
 }

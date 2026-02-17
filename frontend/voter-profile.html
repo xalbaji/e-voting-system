@@ -839,12 +839,13 @@ const API_BASE_URL = (function() {
             }
         });
 
-        // Logout
-        document.getElementById('logout').addEventListener('click', (e) => {
-            e.preventDefault();
-            localStorage.clear();
-            window.location.href = '/';
-        });
+        // Simple Logout
+document.getElementById('logout').addEventListener('click', (e) => {
+    e.preventDefault();          // Prevent default button behavior
+    localStorage.removeItem('token'); // Remove the token
+    window.location.href = '/';       // Redirect to homepage
+});
+
 
         // Initialize
         checkAuth();
