@@ -3,7 +3,7 @@ import { User } from '../users/user.entity';
 import { Election } from '../elections/election.entity';
 import { Position } from '../positions/position.entity';
 import { Candidate } from '../candidates/candidate.entity';
-import { Vote } from '../votes/vote.entity';  // FIXED: Correct import path
+import { Vote } from '../votes/vote.entity';
 import { AuditLog } from '../audit-logs/audit-log.entity';
 
 export const databaseConfig: TypeOrmModuleOptions = {
@@ -15,15 +15,13 @@ export const databaseConfig: TypeOrmModuleOptions = {
   database: process.env.MYSQLDATABASE || process.env.DB_DATABASE || 'evoting_db',
   entities: [User, Election, Position, Candidate, Vote, AuditLog],
   synchronize: true,
-  logging: true, // Enable logging for debugging (set to false in production)
+  logging: false,
   retryAttempts: 10,
   retryDelay: 3000,
-  autoLoadEntities: true,
+  // Railway specific settings
   extra: {
-    connectionLimit: 10,
-    connectTimeout: 60000, // Increased to 60 seconds
-    acquireTimeout: 60000,
+    connectionLimit: 5,
   },
-  // SSL configuration for Railway
+  // SSL for production - IMPORTANT for Railway
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
 };
