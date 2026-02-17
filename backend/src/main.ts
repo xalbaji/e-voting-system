@@ -10,11 +10,11 @@ async function bootstrap() {
   console.log('NODE_ENV:', process.env.NODE_ENV);
   console.log('PORT:', process.env.PORT);
   console.log('--- Database Variables ---');
-  console.log('MYSQLHOST:', process.env.MYSQLHOST || '❌ NOT SET');
+  console.log('MYSQLHOST:', process.env.MYSQLHOST);
   console.log('MYSQLPORT:', process.env.MYSQLPORT || '❌ NOT SET');
-  console.log('MYSQLUSER:', process.env.MYSQLUSER || '❌ NOT SET');
+  console.log('MYSQLUSER:', process.env.MYSQLUSER);
   console.log('MYSQLDATABASE:', process.env.MYSQLDATABASE || '❌ NOT SET');
-  console.log('MYSQLPASSWORD exists:', process.env.MYSQLPASSWORD ? '✅ YES' : '❌ NO');
+  console.log('MYSQLPASSWORD:', process.env.MYSQLPASSWORD);
   console.log('DB_HOST:', process.env.DB_HOST || '❌ NOT SET');
   console.log('DB_PORT:', process.env.DB_PORT || '❌ NOT SET');
   console.log('------------------------');
