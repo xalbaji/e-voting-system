@@ -18,11 +18,9 @@ export const databaseConfig: TypeOrmModuleOptions = {
   logging: false,
   retryAttempts: 10,
   retryDelay: 3000,
+  // Enable SSL for Railway (required)
+  ssl: process.env.MYSQLHOST ? { rejectUnauthorized: false } : false,
   extra: {
     connectionLimit: 5,
   },
-  // Only use SSL in production AND when MYSQLHOST is set
-  ssl: process.env.NODE_ENV === 'production' && process.env.MYSQLHOST 
-    ? { rejectUnauthorized: false } 
-    : false,
 };
