@@ -10,7 +10,7 @@ import { AuthModule } from './auth/auth.module';
 import { ElectionsModule } from './elections/elections.module';
 import { PositionsModule } from './positions/positions.module';
 import { CandidatesModule } from './candidates/candidates.module';
-import { VotesModule } from './users/votes/votes.module';
+import { VotesModule } from './votes/votes.module';
 import { AuditLogsModule } from './audit-logs/audit-logs.module';
 import { StaffModule } from './staff/staff.module';
 import { AdminModule } from './admin/admin.module';
