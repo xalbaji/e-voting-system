@@ -8,12 +8,12 @@ import { AuditLog } from '../audit-logs/audit-log.entity';
 
 export const databaseConfig = {
   type: 'mysql',
-  host: process.env.DB_HOST,
-  port: Number(process.env.DB_PORT),
-  username: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  synchronize: true, // optional, use carefully on prod
-  autoLoadEntities: true,
+  host: process.env.MYSQLHOST,
+  port: parseInt(process.env.MYSQLPORT, 10) || 3306,
+  username: process.env.MYSQLUSER,
+  password: process.env.MYSQLPASSWORD,
+  database: process.env.MYSQLDATABASE,
+  entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+  synchronize: true, // set to false for production if migrations are used
 };
 
