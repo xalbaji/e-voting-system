@@ -3,13 +3,13 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
-  console.log('🚀 Starting application...');
-  console.log('Environment:', {
-    NODE_ENV: process.env.NODE_ENV,
-    PORT: process.env.PORT,
-    DB_HOST: process.env.MYSQLHOST || process.env.DB_HOST,
-    DB_NAME: process.env.MYSQLDATABASE || process.env.DB_DATABASE,
-  });
+  console.log('Railway MySQL Variables:', {
+  host: process.env.MYSQLHOST,
+  port: process.env.MYSQLPORT,
+  user: process.env.MYSQLUSER,
+  database: process.env.MYSQLDATABASE,
+  hasPassword: !!process.env.MYSQLPASSWORD
+});
 
   try {
     const app = await NestFactory.create(AppModule, {
@@ -43,6 +43,7 @@ async function bootstrap() {
     console.log(`✅ Server successfully started on port ${port}`);
     console.log(`📡 Health check: http://localhost:${port}/api/health`);
     console.log(`📡 API root: http://localhost:${port}/api`);
+
     
   } catch (error) {
     console.error('❌ Failed to start application:');

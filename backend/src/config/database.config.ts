@@ -8,20 +8,18 @@ import { AuditLog } from '../audit-logs/audit-log.entity';
 
 export const databaseConfig: TypeOrmModuleOptions = {
   type: 'mysql',
-  host: process.env.MYSQLHOST || process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.MYSQLPORT, 10) || parseInt(process.env.DB_PORT, 10) || 3306,
-  username: process.env.MYSQLUSER || process.env.DB_USERNAME || 'root',
-  password: process.env.MYSQLPASSWORD || process.env.DB_PASSWORD || '',
-  database: process.env.MYSQLDATABASE || process.env.DB_DATABASE || 'evoting_db',
+  host: process.env.MYSQLHOST,  // Use Railway variable
+  port: parseInt(process.env.MYSQLPORT, 10), // Use Railway variable
+  username: process.env.MYSQLUSER, // Use Railway variable
+  password: process.env.MYSQLPASSWORD, // Use Railway variable
+  database: process.env.MYSQLDATABASE, // Use Railway variable
   entities: [User, Election, Position, Candidate, Vote, AuditLog],
   synchronize: true,
   logging: false,
   retryAttempts: 10,
   retryDelay: 3000,
-  // Railway specific settings
   extra: {
     connectionLimit: 5,
   },
-  // SSL for production - IMPORTANT for Railway
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+  ssl: { rejectUnauthorized: false }, // Railway requires SSL
 };
