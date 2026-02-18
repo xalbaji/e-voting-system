@@ -16,12 +16,12 @@ async function bootstrap() {
     app.setGlobalPrefix('api');
 
     // Optional: simple root endpoint
-   // app.getHttpAdapter().get('/', (req, res) => {
-    //  res.json({
-     //   message: 'E-Voting API is running locally',
-      //  timestamp: new Date().toISOString()
-    //  });
-   // });
+    app.getHttpAdapter().get('/', (req, res) => {
+      res.json({
+        message: 'E-Voting API is running locally',
+        timestamp: new Date().toISOString()
+      });
+    });
 
     // Use local port or default to 3000
     const port = process.env.PORT || 3000;
