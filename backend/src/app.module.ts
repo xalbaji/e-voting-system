@@ -45,7 +45,7 @@ import { AuditLog } from './audit-logs/audit-log.entity';
         password: process.env.MYSQLPASSWORD,
         database: process.env.MYSQLDATABASE,
         entities: [User, Election, Position, Candidate, Vote, AuditLog],
-        synchronize: true,
+        synchronize: false,
         logging: true,
       }),
     }),
