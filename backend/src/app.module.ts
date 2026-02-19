@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService} from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 
@@ -30,24 +30,29 @@ import { ElectionsController } from './elections/elections.controller';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath:
+        process.env.NODE_ENV === 'production' ? '.env' : '.env.local',
+    }),
 
     // TypeORM setup with SSL for Railway and dev/prod safe options
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: () => ({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
         type: 'mysql',
-        host: process.env.MYSQLHOST,
-        port: parseInt(process.env.MYSQLPORT || '3306', 10),
-        username: process.env.MYSQLUSER,
-        password: process.env.MYSQLPASSWORD,
-        database: process.env.MYSQLDATABASE,
+        host: config.get<string>('MYSQLHOST'),
+        port: parseInt(config.get<string>('MYSQLPORT') || '3306', 10),
+        username: config.get<string>('MYSQLUSER'),
+        password: config.get<string>('MYSQLPASSWORD'),
+        database: config.get<string>('MYSQLDATABASE'),
         entities: [User, Election, Position, Candidate, Vote, AuditLog],
-        synchronize: process.env.NODE_ENV !== 'production', // auto-create tables only in dev
+        synchronize: config.get<string>('NODE_ENV') !== 'production',
         logging: true,
         extra: {
           ssl:
-            process.env.NODE_ENV === 'production'
+            config.get<string>('NODE_ENV') === 'production'
               ? { rejectUnauthorized: false } // accept Railway self-signed cert
               : false,
         },

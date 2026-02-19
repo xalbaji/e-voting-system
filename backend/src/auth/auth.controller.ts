@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Req, UseGuards, Get, UnauthorizedException } from '@nestjs/common';
+import { Controller, Post, Body, Req, UseGuards, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -12,11 +12,11 @@ export class AuthController {
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
-    
+
     if (user.status !== 'approved' && user.role !== 'admin') {
       throw new UnauthorizedException('Your account is pending approval');
     }
-    
+
     const ipAddress = req.ip || req.connection.remoteAddress;
     return this.authService.login(user, ipAddress);
   }
@@ -28,11 +28,9 @@ export class AuthController {
   }
 
   @Post('logout')
-async logout(@Req() req) {
-  if (req.user) {
+  @UseGuards(AuthGuard('jwt')) // Ensure user is authenticated
+  async logout(@Req() req) {
     const ipAddress = req.ip || req.connection.remoteAddress;
     return this.authService.logout(req.user.id, req.user.email, ipAddress);
   }
-  return { message: 'Logged out successfully' };
-}
 }
