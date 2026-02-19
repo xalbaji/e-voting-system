@@ -566,14 +566,8 @@
 
     <script>
         // At the top of each HTML file's script section
-const API_BASE_URL = (function() {
-    // Check if we're running on localhost
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        return '/api';
-    }
-    // Production - use the Railway URL
-    return 'https://e-voting-system.up.railway.app/api';
-})();
+const API_BASE_URL = '/api';
+
 
 
         // Update date and time
