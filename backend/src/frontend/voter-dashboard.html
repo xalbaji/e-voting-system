@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voter Dashboard - E-Voting System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 260px;
+            background: #2c3e50;
+            color: white;
+            padding: 20px 0;
+            position: fixed;
+            height: 100vh;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #34495e;
+        }
+
+        .sidebar-header h2 {
+            color: #ecf0f1;
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-header p {
+            color: #bdc3c7;
+            font-size: 14px;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+            padding: 20px 0;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            padding: 12px 25px;
+            color: #ecf0f1;
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: #34495e;
+            border-left-color: #3498db;
+        }
+
+        .sidebar-nav i {
+            margin-right: 10px;
+            width: 20px;
+            display: inline-block;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 30px;
+        }
+
+        .welcome-header {
+            background: white;
+            padding: 25px 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .welcome-header h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .welcome-header p {
+            color: #7f8c8d;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #95a5a6;
+            font-size: 13px;
+        }
+
+        /* Section Styles */
+        .section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section h2 i {
+            color: #3498db;
+        }
+
+        /* Election Cards */
+        .elections-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .election-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid #e9ecef;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .election-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .election-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .election-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .election-status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #27ae6020;
+            color: #27ae60;
+            border: 1px solid #27ae60;
+        }
+
+        .status-upcoming {
+            background: #3498db20;
+            color: #3498db;
+            border: 1px solid #3498db;
+        }
+
+        .status-completed {
+            background: #9b59b620;
+            color: #9b59b6;
+            border: 1px solid #9b59b6;
+        }
+
+        .status-voted {
+            background: #95a5a620;
+            color: #7f8c8d;
+            border: 1px solid #95a5a6;
+        }
+
+        .election-description {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .election-meta {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            color: #95a5a6;
+        }
+
+        .election-meta i {
+            margin-right: 5px;
+        }
+
+        .btn-vote {
+            width: 100%;
+            padding: 10px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+
+        .btn-vote:hover:not(:disabled) {
+            background: #219a52;
+        }
+
+        .btn-vote:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        .btn-view {
+            width: 100%;
+            padding: 10px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+
+        .btn-view:hover {
+            background: #2980b9;
+        }
+
+        .voted-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #27ae60;
+            color: white;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #95a5a6;
+            background: #f8f9fa;
+            border-radius: 8px;
+            grid-column: 1 / -1;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 10px;
+            opacity: 0.5;
+        }
+
+        /* Voting Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .modal-header h2 {
+            color: #2c3e50;
+        }
+
+        .close {
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #95a5a6;
+        }
+
+        .close:hover {
+            color: #2c3e50;
+        }
+
+        .position-group {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .position-group h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .candidate-option {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 5px;
+            border: 1px solid #dee2e6;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .candidate-option:hover {
+            background: #f0f0f0;
+            border-color: #3498db;
+        }
+
+        .candidate-option.selected {
+            background: #e3f2fd;
+            border-color: #3498db;
+            border-width: 2px;
+        }
+
+        .candidate-option input[type="radio"] {
+            margin-right: 15px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .candidate-info {
+            flex: 1;
+        }
+
+        .candidate-name {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 3px;
+        }
+
+        .candidate-bio {
+            font-size: 13px;
+            color: #7f8c8d;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .btn-submit {
+            padding: 10px 20px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-submit:hover {
+            background: #219a52;
+        }
+
+        .btn-cancel {
+            padding: 10px 20px;
+            background: #95a5a6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-cancel:hover {
+            background: #7f8c8d;
+        }
+
+        /* Success Message */
+        .success-message {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .success-message i {
+            font-size: 64px;
+            color: #27ae60;
+            margin-bottom: 20px;
+        }
+
+        .success-message h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .success-message p {
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+
+        /* Loading Spinner */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #95a5a6;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-left: 10px;
+            border: 2px solid #95a5a6;
+            border-top-color: #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: #2c3e50;
+            color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 2000;
+            display: none;
+            max-width: 400px;
+        }
+
+        .notification.success {
+            background: #27ae60;
+        }
+
+        .notification.error {
+            background: #e74c3c;
+        }
+
+        .notification.info {
+            background: #3498db;
+        }
+
+        /* Refresh Button */
+        .refresh-btn {
+            padding: 8px 16px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 20px;
+        }
+
+        .refresh-btn:hover {
+            background: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <!-- Voting Modal -->
+    <div id="votingModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalElectionTitle">Cast Your Vote</h2>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            
+            <div id="modalContent">
+                <!-- Dynamic content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>E-VOTING</h2>
+                <p>Voter Panel</p>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="voter-dashboard.html" class="active"><i>📊</i> Dashboard</a></li>
+                    <li><a href="voter-profile.html"><i>👤</i> My Profile</a></li>
+                    <li><a href="voter-history.html"><i>📋</i> Voting History</a></li>
+                    <li><a href="#" id="logout"><i>🚪</i> Logout</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div class="welcome-header" style="margin-bottom: 0; flex: 1;">
+                    <h1>Welcome, <span id="voterName">jimuel sapansa</span>!</h1>
+                    <p>Here's what's happening today in the E-Voting system.</p>
+                </div>
+                <button class="refresh-btn" onclick="loadDashboard()">
+                    <i>🔄</i> Refresh
+                </button>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Active Elections</h3>
+                    <div class="stat-number" id="activeCount">0</div>
+                    <div class="stat-label">Currently ongoing</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Voted In</h3>
+                    <div class="stat-number" id="votedCount">0</div>
+                    <div class="stat-label">Elections you've voted in</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Pending Elections</h3>
+                    <div class="stat-number" id="pendingCount">0</div>
+                    <div class="stat-label">Awaiting your vote</div>
+                </div>
+            </div>
+
+            <!-- Active Elections Section -->
+            <div class="section">
+                <h2><i>🔴</i> Active Elections</h2>
+                <div class="elections-grid" id="activeElections">
+                    <div class="loading">Loading elections...</div>
+                </div>
+            </div>
+
+            <!-- Upcoming Elections Section -->
+            <div class="section">
+                <h2><i>📅</i> Upcoming Elections</h2>
+                <div class="elections-grid" id="upcomingElections">
+                    <div class="loading">Loading upcoming elections...</div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // At the top of each HTML file's script section
+const API_BASE_URL = '/api';
+
+
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        // Check authentication
+        async function checkAuth() {
+            const token = localStorage.getItem('token');
+            const userStr = localStorage.getItem('user');
+            
+            if (!token || !userStr) {
+                window.location.href = '/';
+                return;
+            }
+
+            try {
+                currentUser = JSON.parse(userStr);
+                
+                if (currentUser.role !== 'voter') {
+                    window.location.href = currentUser.role === 'admin' ? '/admin-dashboard.html' : '/staff-dashboard.html';
+                    return;
+                }
+
+                if (currentUser.status !== 'approved') {
+                    showPendingApproval();
+                    return;
+                }
+
+                document.getElementById('voterName').textContent = 
+                    `${currentUser.first_name || 'jimuel'} ${currentUser.last_name || 'sapansa'}`;
+                
+                loadDashboard();
+            } catch (error) {
+                console.error('Auth error:', error);
+                window.location.href = '/';
+            }
+        }
+
+        function showPendingApproval() {
+            const mainContent = document.querySelector('.main-content');
+            mainContent.innerHTML = `
+                <div style="text-align: center; padding: 100px; background: white; border-radius: 10px;">
+                    <h1 style="color: #f39c12; margin-bottom: 20px;">⏳ Account Pending Approval</h1>
+                    <p style="color: #7f8c8d; margin-bottom: 30px;">Your account is waiting for admin approval. You'll be able to vote once approved.</p>
+                    <button onclick="logout()" style="padding: 10px 20px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer;">Logout</button>
+                </div>
+            `;
+        }
+
+        // Load dashboard data from database
+        async function loadDashboard() {
+            const token = localStorage.getItem('token');
+            
+            try {
+                // Get user's voting history
+                const votesResponse = await fetch(`${API_BASE_URL}/votes/my-votes`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (votesResponse.ok) {
+                    const votes = await votesResponse.json();
+                    votedElections = [...new Set(votes.map(v => v.election_id))];
+                }
+
+                // Get all elections from database
+                const electionsResponse = await fetch(`${API_BASE_URL}/elections`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (electionsResponse.ok) {
+                    const elections = await electionsResponse.json();
+                    
+                    // Filter elections by status
+                    const active = elections.filter(e => e.status === 'ongoing');
+                    const upcoming = elections.filter(e => e.status === 'upcoming');
+                    
+                    // Update stats
+                    document.getElementById('activeCount').textContent = active.length;
+                    document.getElementById('votedCount').textContent = votedElections.length;
+                    document.getElementById('pendingCount').textContent = 
+                        active.filter(e => !votedElections.includes(e.id)).length;
+                    
+                    // Display elections
+                    displayElections(active, 'active');
+                    displayElections(upcoming, 'upcoming');
+                    
+                    showNotification('Dashboard updated', 'success');
+                } else {
+                    showNotification('Failed to load elections', 'error');
+                }
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                showNotification('Error connecting to server', 'error');
+            }
+        }
+
+        // Display elections
+        function displayElections(elections, type) {
+            const container = document.getElementById(`${type}Elections`);
+            
+            if (!elections || elections.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i>${type === 'active' ? '🔴' : '📅'}</i>
+                        <p>No ${type} elections at the moment.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = elections.map(election => {
+                const hasVoted = votedElections.includes(election.id);
+                const endDate = formatDate(election.end_date);
+                
+                return `
+                    <div class="election-card">
+                        <div class="election-header">
+                            <span class="election-title">${election.title}</span>
+                            <span class="election-status ${hasVoted ? 'status-voted' : 'status-active'}">
+                                ${hasVoted ? '✓ VOTED' : 'ACTIVE'}
+                            </span>
+                        </div>
+                        <div class="election-description">${election.description || 'No description'}</div>
+                        <div class="election-meta">
+                            <span><i>📅</i> Ends: ${endDate}</span>
+                        </div>
+                        ${type === 'active' ? 
+                            (hasVoted ? 
+                                '<button class="btn-view" disabled>Already Voted</button>' : 
+                                `<button class="btn-vote" onclick="openVotingModal(${election.id}, '${election.title}')">Cast Vote</button>`
+                            ) : 
+                            '<button class="btn-view" disabled>Coming Soon</button>'
+                        }
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Open voting modal
+        async function openVotingModal(electionId, electionTitle) {
+            currentElection = { id: electionId, title: electionTitle };
+            
+            const modal = document.getElementById('votingModal');
+            const modalContent = document.getElementById('modalContent');
+            const modalTitle = document.getElementById('modalElectionTitle');
+            
+            modalTitle.textContent = `Cast Your Vote - ${electionTitle}`;
+            
+            // Show loading
+            modalContent.innerHTML = '<div class="loading">Loading candidates...</div>';
+            modal.style.display = 'block';
+            
+            try {
+                const token = localStorage.getItem('token');
+                
+                // Fetch positions and candidates for this election
+                const response = await fetch(`${API_BASE_URL}/elections/${electionId}/positions`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const positions = await response.json();
+                    displayVotingForm(positions);
+                } else {
+                    modalContent.innerHTML = '<div class="empty-state">No candidates found for this election</div>';
+                }
+            } catch (error) {
+                console.error('Error loading positions:', error);
+                modalContent.innerHTML = '<div class="empty-state">Error loading candidates. Please try again.</div>';
+            }
+        }
+
+        // Display voting form
+        function displayVotingForm(positions) {
+            const modalContent = document.getElementById('modalContent');
+            
+            const formHtml = `
+                <form id="votingForm">
+                    ${positions.map(position => `
+                        <div class="position-group">
+                            <h3>${position.position_name}</h3>
+                            ${position.candidates.map(candidate => `
+                                <div class="candidate-option" onclick="selectCandidate(this, ${position.id}, ${candidate.id})">
+                                    <input type="radio" name="position_${position.id}" value="${candidate.id}" required>
+                                    <div class="candidate-info">
+                                        <div class="candidate-name">${candidate.first_name} ${candidate.last_name}</div>
+                                        <div class="candidate-bio">${candidate.biography || 'No biography provided'}</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `).join('')}
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+                        <button type="submit" class="btn-submit">Submit Votes</button>
+                    </div>
+                </form>
+            `;
+            
+            modalContent.innerHTML = formHtml;
+            
+            // Add form submit handler
+            document.getElementById('votingForm').addEventListener('submit', submitVotes);
+        }
+
+        // Select candidate helper
+        function selectCandidate(element, positionId, candidateId) {
+            const parentGroup = element.closest('.position-group');
+            parentGroup.querySelectorAll('.candidate-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            const radio = element.querySelector('input[type="radio"]');
+            if (radio) radio.checked = true;
+        }
+
+        // Submit votes
+        async function submitVotes(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const votes = [];
+            
+            for (let [key, value] of formData.entries()) {
+                const positionId = parseInt(key.split('_')[1]);
+                votes.push({
+                    position_id: positionId,
+                    candidate_id: parseInt(value)
+                });
+            }
+
+            const positionCount = document.querySelectorAll('.position-group').length;
+            if (votes.length !== positionCount) {
+                showNotification('Please vote for all positions', 'error');
+                return;
+            }
+
+            const token = localStorage.getItem('token');
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/votes/cast`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        election_id: currentElection.id,
+                        votes: votes
+                    })
+                });
+
+                if (response.ok) {
+                    showSuccessMessage();
+                } else {
+                    const error = await response.json();
+                    showNotification(error.error || 'Failed to submit votes', 'error');
+                }
+            } catch (error) {
+                console.error('Error submitting votes:', error);
+                showNotification('Error connecting to server', 'error');
+            }
+        }
+
+        // Show success message after voting
+        function showSuccessMessage() {
+            const modalContent = document.getElementById('modalContent');
+            
+            modalContent.innerHTML = `
+                <div class="success-message">
+                    <i>✅</i>
+                    <h3>Vote Submitted Successfully!</h3>
+                    <p>Thank you for participating in the election.</p>
+                    <button class="btn-submit" onclick="closeModalAndRefresh()">Close</button>
+                </div>
+            `;
+            
+            votedElections.push(currentElection.id);
+            loadDashboard();
+        }
+
+        // Close modal and refresh
+        function closeModalAndRefresh() {
+            closeModal();
+            loadDashboard();
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('votingModal').style.display = 'none';
+            currentElection = null;
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric'
+            });
+        }
+
+        // Simple Logout
+document.getElementById('logout').addEventListener('click', (e) => {
+    e.preventDefault();          // Prevent default button behavior
+    localStorage.removeItem('token'); // Remove the token
+    window.location.href = '/';       // Redirect to homepage
+});
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('votingModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        };
+
+        // Initialize
+        checkAuth();
+    </script>
+</body>
+</html>

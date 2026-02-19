@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Elections - E-Voting System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 260px;
+            background: #2c3e50;
+            color: white;
+            padding: 20px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #34495e;
+        }
+
+        .sidebar-header h2 {
+            color: #ecf0f1;
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-header p {
+            color: #bdc3c7;
+            font-size: 14px;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+            padding: 20px 0;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            padding: 12px 25px;
+            color: #ecf0f1;
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: #34495e;
+            border-left-color: #3498db;
+        }
+
+        .sidebar-nav i {
+            margin-right: 10px;
+            width: 20px;
+            display: inline-block;
+            font-style: normal;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 30px;
+        }
+
+        .header {
+            background: white;
+            padding: 25px 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+        }
+
+        .btn-create {
+            padding: 10px 20px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .btn-create:hover {
+            background: #219a52;
+        }
+
+        .elections-list {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .election-item {
+            padding: 20px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .election-item:last-child {
+            border-bottom: none;
+        }
+
+        .election-info h3 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .election-info p {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .election-meta {
+            color: #95a5a6;
+            font-size: 13px;
+        }
+
+        .election-status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-ongoing {
+            background: #27ae60;
+            color: white;
+        }
+
+        .status-upcoming {
+            background: #3498db;
+            color: white;
+        }
+
+        .status-completed {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .election-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn-edit {
+            padding: 5px 15px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .btn-edit:hover {
+            background: #2980b9;
+        }
+
+        .btn-delete {
+            padding: 5px 15px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .btn-delete:hover {
+            background: #c0392b;
+        }
+
+        /* Election Form (Create/Edit) */
+        .election-form {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .election-form h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #2c3e50;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .btn-save {
+            padding: 10px 20px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-save:hover {
+            background: #219a52;
+        }
+
+        .btn-update {
+            padding: 10px 20px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-update:hover {
+            background: #2980b9;
+        }
+
+        .btn-cancel {
+            padding: 10px 20px;
+            background: #95a5a6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-cancel:hover {
+            background: #7f8c8d;
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: #2c3e50;
+            color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 2000;
+            display: none;
+            max-width: 400px;
+        }
+
+        .notification.success {
+            background: #27ae60;
+        }
+
+        .notification.error {
+            background: #e74c3c;
+        }
+
+        .notification.info {
+            background: #3498db;
+        }
+
+        /* Loading Spinner */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #95a5a6;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-left: 10px;
+            border: 2px solid #95a5a6;
+            border-top-color: #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <div class="container">
+        <!-- Sidebar with Icons -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>E-VOTING</h2>
+                <p>Admin Panel</p>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="admin-dashboard.html"><i>📊</i> Dashboard</a></li>
+                    <li><a href="admin-elections.html" class="active"><i>🗳️</i> Elections</a></li>
+                    <li><a href="admin-positions.html"><i>📌</i> Positions</a></li>
+                    <li><a href="admin-candidates.html"><i>👤</i> Candidates</a></li>
+                    <li><a href="admin-voters.html"><i>👥</i> Voters</a></li>
+                    <li><a href="admin-staff.html"><i>👥</i> Staff</a></li>
+                    <li><a href="admin-reports.html"><i>📈</i> Reports</a></li>
+                    <li><a href="admin-audit-logs.html"><i>📋</i> Audit Logs</a></li>
+                    <li><a href="#" id="logout"><i>🚪</i> Logout</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="header">
+                <h1>Elections Manager</h1>
+                <button class="btn-create" onclick="showCreateForm()">+ Create New Election</button>
+            </div>
+
+            <!-- Elections List -->
+            <div class="elections-list" id="electionsList">
+                <div class="loading">Loading elections...</div>
+            </div>
+
+            <!-- Create/Edit Election Form (initially hidden) -->
+            <div class="election-form" id="electionForm" style="display: none;">
+                <h2 id="formTitle">Create New Election</h2>
+                
+                <input type="hidden" id="electionId">
+                
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" id="electionTitle" placeholder="Enter election title">
+                </div>
+
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="electionDescription" placeholder="Enter election description"></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Start Date</label>
+                        <input type="date" id="startDate">
+                    </div>
+                    <div class="form-group">
+                        <label>End Date</label>
+                        <input type="date" id="endDate">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="electionStatus">
+                        <option value="upcoming">Upcoming</option>
+                        <option value="ongoing">Ongoing</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn-cancel" onclick="hideForm()">Cancel</button>
+                    <button class="btn-save" id="saveBtn" onclick="createElection()">Create Election</button>
+                    <button class="btn-update" id="updateBtn" onclick="updateElection()" style="display: none;">Update Election</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>// At the top of each HTML file's script section
+const API_BASE_URL = '/api';
+
+
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        // Check authentication
+        async function checkAuth() {
+            const token = localStorage.getItem('token');
+            const userStr = localStorage.getItem('user');
+            
+            if (!token || !userStr) {
+                window.location.href = '/';
+                return;
+            }
+
+            try {
+                const user = JSON.parse(userStr);
+                if (user.role !== 'admin') {
+                    window.location.href = '/';
+                }
+            } catch (error) {
+                console.error('Auth error:', error);
+                window.location.href = '/';
+            }
+        }
+
+        // Load elections
+        async function loadElections() {
+            const token = localStorage.getItem('token');
+            const container = document.getElementById('electionsList');
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/elections`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const elections = await response.json();
+                    
+                    if (elections.length === 0) {
+                        container.innerHTML = '<p style="text-align: center; padding: 40px;">No elections found. Click "Create New Election" to get started.</p>';
+                    } else {
+                        container.innerHTML = elections.map(election => {
+                            const startDate = formatDate(election.start_date);
+                            const endDate = formatDate(election.end_date);
+                            
+                            return `
+                                <div class="election-item">
+                                    <div class="election-info">
+                                        <h3>${election.title}</h3>
+                                        <p>${election.description || 'No description'}</p>
+                                        <div class="election-meta">
+                                            Created by: System Administrator | 
+                                            Start: ${startDate} | 
+                                            End: ${endDate}
+                                        </div>
+                                    </div>
+                                    <div class="election-actions">
+                                        <span class="election-status status-${election.status}">${election.status}</span>
+                                        <button class="btn-edit" onclick='editElection(${JSON.stringify(election)})'>Edit</button>
+                                        <button class="btn-delete" onclick="deleteElection(${election.id})">Delete</button>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                    }
+                } else {
+                    showNotification('Failed to load elections', 'error');
+                }
+            } catch (error) {
+                console.error('Error loading elections:', error);
+                showNotification('Error connecting to server', 'error');
+            }
+        }
+
+        // Show create form
+        function showCreateForm() {
+            document.getElementById('formTitle').textContent = 'Create New Election';
+            document.getElementById('electionId').value = '';
+            document.getElementById('electionTitle').value = '';
+            document.getElementById('electionDescription').value = '';
+            document.getElementById('startDate').value = '';
+            document.getElementById('endDate').value = '';
+            document.getElementById('electionStatus').value = 'upcoming';
+            
+            document.getElementById('saveBtn').style.display = 'inline-block';
+            document.getElementById('updateBtn').style.display = 'none';
+            
+            currentElectionId = null;
+            document.getElementById('electionForm').style.display = 'block';
+            
+            // Scroll to form
+            document.getElementById('electionForm').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Hide form
+        function hideForm() {
+            document.getElementById('electionForm').style.display = 'none';
+            currentElectionId = null;
+        }
+
+        // Edit election
+        function editElection(election) {
+            document.getElementById('formTitle').textContent = 'Edit Election';
+            document.getElementById('electionId').value = election.id;
+            document.getElementById('electionTitle').value = election.title || '';
+            document.getElementById('electionDescription').value = election.description || '';
+            
+            // Format dates for input fields (YYYY-MM-DD)
+            if (election.start_date) {
+                const startDate = new Date(election.start_date).toISOString().split('T')[0];
+                document.getElementById('startDate').value = startDate;
+            }
+            if (election.end_date) {
+                const endDate = new Date(election.end_date).toISOString().split('T')[0];
+                document.getElementById('endDate').value = endDate;
+            }
+            
+            document.getElementById('electionStatus').value = election.status || 'upcoming';
+            
+            document.getElementById('saveBtn').style.display = 'none';
+            document.getElementById('updateBtn').style.display = 'inline-block';
+            
+            currentElectionId = election.id;
+            document.getElementById('electionForm').style.display = 'block';
+            
+            // Scroll to form
+            document.getElementById('electionForm').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Create election
+        async function createElection() {
+            const token = localStorage.getItem('token');
+            const electionData = {
+                title: document.getElementById('electionTitle').value,
+                description: document.getElementById('electionDescription').value,
+                start_date: document.getElementById('startDate').value,
+                end_date: document.getElementById('endDate').value,
+                status: document.getElementById('electionStatus').value
+            };
+
+            if (!electionData.title) {
+                showNotification('Please enter a title', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/elections`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(electionData)
+                });
+
+                if (response.ok) {
+                    showNotification('Election created successfully', 'success');
+                    hideForm();
+                    loadElections();
+                } else {
+                    const error = await response.json();
+                    showNotification(error.error || 'Failed to create election', 'error');
+                }
+            } catch (error) {
+                console.error('Error creating election:', error);
+                showNotification('Error connecting to server', 'error');
+            }
+        }
+
+        // Update election
+        async function updateElection() {
+            if (!currentElectionId) {
+                showNotification('No election selected', 'error');
+                return;
+            }
+
+            const token = localStorage.getItem('token');
+            const electionData = {
+                title: document.getElementById('electionTitle').value,
+                description: document.getElementById('electionDescription').value,
+                start_date: document.getElementById('startDate').value,
+                end_date: document.getElementById('endDate').value,
+                status: document.getElementById('electionStatus').value
+            };
+
+            if (!electionData.title) {
+                showNotification('Please enter a title', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/elections/${currentElectionId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(electionData)
+                });
+
+                if (response.ok) {
+                    showNotification('Election updated successfully', 'success');
+                    hideForm();
+                    loadElections();
+                } else {
+                    const error = await response.json();
+                    showNotification(error.error || 'Failed to update election', 'error');
+                }
+            } catch (error) {
+                console.error('Error updating election:', error);
+                showNotification('Error connecting to server', 'error');
+            }
+        }
+
+        // Delete election
+        async function deleteElection(id) {
+            if (!confirm('⚠️ Are you sure you want to delete this election? This action cannot be undone.')) {
+                return;
+            }
+            
+            const token = localStorage.getItem('token');
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/elections/${id}`, {
+                    method: 'DELETE',
+                    headers: { 
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    showNotification('Election deleted successfully', 'success');
+                    
+                    // If the deleted election was being edited, hide the form
+                    if (currentElectionId === id) {
+                        hideForm();
+                    }
+                    
+                    // Reload the elections list
+                    await loadElections();
+                } else {
+                    const error = await response.json();
+                    showNotification(error.error || 'Failed to delete election', 'error');
+                }
+            } catch (error) {
+                console.error('Error deleting election:', error);
+                showNotification('Error connecting to server', 'error');
+            }
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+       // Simple Logout
+document.getElementById('logout').addEventListener('click', (e) => {
+    e.preventDefault();          // Prevent default button behavior
+    localStorage.removeItem('token'); // Remove the token
+    window.location.href = '/';       // Redirect to homepage
+});
+
+
+        // Initialize
+        checkAuth();
+        loadElections();
+    </script>
+</body>
+</html>
