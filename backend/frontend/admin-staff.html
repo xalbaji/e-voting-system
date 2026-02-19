@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Staff - E-Voting System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 260px;
+            background: #2c3e50;
+            color: white;
+            padding: 20px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #34495e;
+        }
+
+        .sidebar-header h2 {
+            color: #ecf0f1;
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-header p {
+            color: #bdc3c7;
+            font-size: 14px;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+            padding: 20px 0;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            padding: 12px 25px;
+            color: #ecf0f1;
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: #34495e;
+            border-left-color: #3498db;
+        }
+
+        .sidebar-nav i {
+            margin-right: 10px;
+            width: 20px;
+            display: inline-block;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 30px;
+        }
+
+        .header {
+            background: white;
+            padding: 25px 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+        }
+
+        .btn-create {
+            padding: 10px 20px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .btn-create:hover {
+            background: #219a52;
+        }
+
+        .btn-promote {
+            padding: 8px 16px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background 0.3s;
+        }
+
+        .btn-promote:hover {
+            background: #2980b9;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* Staff List */
+        .staff-list {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .staff-list h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .staff-item {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .staff-item:last-child {
+            border-bottom: none;
+        }
+
+        .staff-info h3 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .staff-info p {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .staff-meta {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .staff-actions button {
+            padding: 5px 10px;
+            margin-left: 5px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .btn-edit {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-delete {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-demote {
+            background: #f39c12;
+            color: white;
+        }
+
+        /* Staff Form */
+        .staff-form {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .staff-form h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #2c3e50;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .btn-save {
+            padding: 10px 20px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-close {
+            padding: 10px 20px;
+            background: #95a5a6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Voter Selection Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .modal-header h2 {
+            color: #2c3e50;
+        }
+
+        .close {
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #95a5a6;
+        }
+
+        .close:hover {
+            color: #2c3e50;
+        }
+
+        .voter-search {
+            margin-bottom: 20px;
+        }
+
+        .voter-search input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .voter-item {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .voter-item:hover {
+            background: #f8f9fa;
+        }
+
+        .voter-item.selected {
+            background: #e3f2fd;
+            border-left: 3px solid #3498db;
+        }
+
+        .voter-info h4 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .voter-info p {
+            color: #7f8c8d;
+            font-size: 13px;
+        }
+
+        .btn-select {
+            padding: 5px 15px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: #2c3e50;
+            color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 2000;
+            display: none;
+            max-width: 400px;
+        }
+
+        .notification.success {
+            background: #27ae60;
+        }
+
+        .notification.error {
+            background: #e74c3c;
+        }
+
+        .notification.info {
+            background: #3498db;
+        }
+    </style>
+</head>
+<body>
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>E-VOTING</h2>
+                <p>Admin Panel</p>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="admin-dashboard.html"><i>📊</i> Dashboard</a></li>
+                    <li><a href="admin-elections.html"><i>🗳️</i> Elections</a></li>
+                    <li><a href="admin-positions.html"><i>📌</i> Positions</a></li>
+                    <li><a href="admin-candidates.html"><i>👤</i> Candidates</a></li>
+                    <li><a href="admin-voters.html"><i>👥</i> Voters</a></li>
+                    <li><a href="admin-staff.html" class="active"><i>👥</i> Staff</a></li>
+                    <li><a href="admin-reports.html"><i>📈</i> Reports</a></li>
+                    <li><a href="admin-audit-logs.html"><i>📋</i> Audit Logs</a></li>
+                    <li><a href="#" id="logout"><i>🚪</i> Logout</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="header">
+                <h1>Manage Staff</h1>
+                <button class="btn-create" onclick="openVoterModal()">+ Add Staff from Voters</button>
+            </div>
+
+            <div class="content-grid">
+                <!-- Staff List -->
+                <div class="staff-list">
+                    <h2>Staff Members</h2>
+                    <div id="staffList">
+                        <!-- Staff will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Staff Form -->
+                <div class="staff-form" id="staffForm">
+                    <h2 id="formTitle">Staff Details</h2>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>First Name</label>
+                            <input type="text" id="firstName" placeholder="First Name">
+                        </div>
+                        <div class="form-group">
+                            <label>Last Name</label>
+                            <input type="text" id="lastName" placeholder="Last Name">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="email" placeholder="Email">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select id="status">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="btn-close" onclick="clearForm()">Close</button>
+                        <button class="btn-save" onclick="saveStaff()">Save Staff</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Voter Selection Modal -->
+    <div id="voterModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Select Voter to Promote to Staff</h2>
+                <span class="close" onclick="closeVoterModal()">&times;</span>
+            </div>
+            
+            <div class="voter-search">
+                <input type="text" id="voterSearch" placeholder="Search voters by name or email..." onkeyup="searchVoters()">
+            </div>
+            
+            <div id="votersList">
+                <!-- Voters will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // At the top of each HTML file's script section
+const API_BASE_URL = '/api';
+
+
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 5000);
+        }
+
+        // Check authentication
+        async function checkAuth() {
+            const token = localStorage.getItem('token');
+            const userStr = localStorage.getItem('user');
+            
+            if (!token || !userStr) {
+                window.location.href = '/';
+                return;
+            }
+
+            try {
+                const user = JSON.parse(userStr);
+                if (user.role !== 'admin') {
+                    window.location.href = '/';
+                }
+            } catch (error) {
+                console.error('Auth error:', error);
+                window.location.href = '/';
+            }
+        }
+
+        // Load staff members
+        async function loadStaff() {
+            const token = localStorage.getItem('token');
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/staff`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const container = document.getElementById('staffList');
+                
+                if (response.ok) {
+                    const staff = await response.json();
+                    
+                    if (staff.length === 0) {
+                        container.innerHTML = '<p style="text-align: center; padding: 40px;">No staff members found</p>';
+                    } else {
+                        container.innerHTML = staff.map(member => `
+                            <div class="staff-item">
+                                <div class="staff-info">
+                                    <h3>${member.first_name} ${member.last_name}</h3>
+                                    <p>${member.email}</p>
+                                    <div class="staff-meta">
+                                        <span class="status-badge status-${member.status === 'active' ? 'active' : 'inactive'}">${member.status}</span>
+                                    </div>
+                                </div>
+                                <div class="staff-actions">
+                                    <button class="btn-edit" onclick="editStaff(${member.id}, '${member.first_name}', '${member.last_name}', '${member.email}', '${member.status}')">Edit</button>
+                                    <button class="btn-demote" onclick="demoteStaff(${member.id})">Demote</button>
+                                    <button class="btn-delete" onclick="deleteStaff(${member.id})">Delete</button>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                } else {
+                    const error = await response.json();
+                    showNotification(error.error || 'Failed to load staff', 'error');
+                }
+            } catch (error) {
+                console.error('Error loading staff:', error);
+                showNotification('Error connecting to server', 'error');
+            }
+        }
+
+        // Load voters for promotion
+        async function loadVoters() {
+            const token = localStorage.getItem('token');
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/voters?status=approved`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const container = document.getElementById('votersList');
+                
+                if (response.ok) {
+                    const voters = await response.json();
+                    
+                    if (voters.length === 0) {
+                        container.innerHTML = '<p style="text-align: center; padding: 20px;">No approved voters available</p>';
+                    } else {
+                        container.innerHTML = voters.map(voter => `
+                            <div class="voter-item" onclick="selectVoter(${voter.id}, '${voter.first_name}', '${voter.last_name}', '${voter.email}')">
+                                <div class="voter-info">
+                                    <h4>${voter.first_name} ${voter.last_name}</h4>
+                                    <p>${voter.email} | Voter ID: ${voter.voter_id || 'N/A'}</p>
+                                </div>
+                                <button class="btn-select">Select</button>
+                            </div>
+                        `).join('');
+                    }
+                } else {
+                    showNotification('Failed to load voters', 'error');
+                }
+            } catch (error) {
+                console.error('Error loading voters:', error);
+                showNotification('Error connecting to server', 'error');
+            }
+        }
+
+        // Search voters
+        function searchVoters() {
+            const searchTerm = document.getElementById('voterSearch').value.toLowerCase();
+            const voterItems = document.querySelectorAll('.voter-item');
+            
+            voterItems.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // Open voter selection modal
+        function openVoterModal() {
+            document.getElementById('voterModal').style.display = 'block';
+            document.getElementById('voterSearch').value = '';
+            loadVoters();
+        }
+
+        // Close voter modal
+        function closeVoterModal() {
+            document.getElementById('voterModal').style.display = 'none';
+        }
+
+        // Select voter to promote
+        // Select voter to promote
+function selectVoter(id, firstName, lastName, email) {
+    document.getElementById('firstName').value = firstName;
+    document.getElementById('lastName').value = lastName;
+    document.getElementById('email').value = email;
+    document.getElementById('status').value = 'active';
+    
+    currentStaffId = null;
+    document.getElementById('formTitle').textContent = 'Promote Voter to Staff';
+    
+    closeVoterModal();
+    
+    // Show info about promotion
+    alert(`This voter will be promoted to staff.\n\nThey can login with their existing password after promotion.`);
+}// Select voter to promote
+// Select voter to promote
+function selectVoter(id, firstName, lastName, email) {
+    document.getElementById('firstName').value = firstName;
+    document.getElementById('lastName').value = lastName;
+    document.getElementById('email').value = email;
+    document.getElementById('status').value = 'active';
+    
+    currentStaffId = null;
+    document.getElementById('formTitle').textContent = 'Promote Voter to Staff';
+    
+    closeVoterModal();
+    
+    // Show detailed info about promotion
+    showNotification(
+        `${firstName} ${lastName} will be promoted to staff.\n\n` +
+        `They can login with:\n` +
+        `Email: ${email}\n` +
+        `Password: (their existing voter password)\n\n` +
+        `Click Save to confirm promotion.`,
+        'info'
+    );
+}
+
+        // Edit staff
+        function editStaff(id, firstName, lastName, email, status) {
+            document.getElementById('firstName').value = firstName;
+            document.getElementById('lastName').value = lastName;
+            document.getElementById('email').value = email;
+            document.getElementById('status').value = status === 'active' ? 'active' : 'inactive';
+            
+            currentStaffId = id;
+            document.getElementById('formTitle').textContent = 'Edit Staff';
+        }
+
+        // Clear form
+        function clearForm() {
+            document.getElementById('firstName').value = '';
+            document.getElementById('lastName').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('status').value = 'active';
+            currentStaffId = null;
+            document.getElementById('formTitle').textContent = 'Staff Details';
+        }
+
+        // Save staff (create or update)
+        async function saveStaff() {
+            const token = localStorage.getItem('token');
+            const staffData = {
+                first_name: document.getElementById('firstName').value,
+                last_name: document.getElementById('lastName').value,
+                email: document.getElementById('email').value,
+                status: document.getElementById('status').value === 'active' ? 'active' : 'inactive'
+            };
+
+            if (!staffData.first_name || !staffData.last_name || !staffData.email) {
+                showNotification('Please fill all fields', 'error');
+                return;
+            }
+
+            try {
+                let response;
+                
+                if (currentStaffId) {
+                    // Update existing staff
+                    response = await fetch(`${API_BASE_URL}/admin/staff/${currentStaffId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(staffData)
+                    });
+                } else {
+                    // Create new staff
+                    response = await fetch(`${API_BASE_URL}/admin/staff`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(staffData)
+                    });
+                }
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    if (currentStaffId) {
+                        showNotification('Staff updated successfully', 'success');
+                    } else {
+                        showNotification(data.message || 'Staff created successfully. Default password: staff123', 'success');
+                    }
+                    clearForm();
+                    loadStaff();
+                } else {
+                    showNotification(data.error || 'Operation failed', 'error');
+                }
+            } catch (error) {
+                console.error('Error saving staff:', error);
+                showNotification('Error connecting to server', 'error');
+            }
+        }
+
+        // Delete staff
+        async function deleteStaff(id) {
+            if (!confirm('Are you sure you want to delete this staff member?')) return;
+            
+            const token = localStorage.getItem('token');
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/staff/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showNotification('Staff deleted successfully', 'success');
+                    loadStaff();
+                    if (currentStaffId === id) clearForm();
+                } else {
+                    showNotification(data.error || 'Delete failed', 'error');
+                }
+            } catch (error) {
+                console.error('Error deleting staff:', error);
+                showNotification('Error connecting to server', 'error');
+            }
+        }
+
+        // Demote staff to voter
+        async function demoteStaff(id) {
+            if (!confirm('Are you sure you want to demote this staff member to voter?')) return;
+            
+            const token = localStorage.getItem('token');
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/staff/${id}/demote`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showNotification('Staff demoted to voter successfully', 'success');
+                    loadStaff();
+                    if (currentStaffId === id) clearForm();
+                } else {
+                    showNotification(data.error || 'Demote failed', 'error');
+                }
+            } catch (error) {
+                console.error('Error demoting staff:', error);
+                showNotification('Error connecting to server', 'error');
+            }
+        }
+
+       // Simple Logout
+document.getElementById('logout').addEventListener('click', (e) => {
+    e.preventDefault();          // Prevent default button behavior
+    localStorage.removeItem('token'); // Remove the token
+    window.location.href = '/';       // Redirect to homepage
+});
+
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('voterModal');
+            if (event.target === modal) {
+                closeVoterModal();
+            }
+        };
+
+        // Initialize
+        checkAuth();
+        loadStaff();
+    </script>
+</body>
+</html>

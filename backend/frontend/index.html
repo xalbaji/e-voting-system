@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Voting System - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            color: #667eea;
+            font-size: 2.5rem;
+        }
+
+        .logo p {
+            color: #666;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #5a67d8;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+
+        .register-link a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert-error {
+            background: #fee;
+            color: #c33;
+            border: 1px solid #fcc;
+        }
+
+        .alert-success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+        }
+
+        /* Hidden debug panel - only accessible with special key combo */
+        .debug-panel {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="login-card">
+            <div class="logo">
+                <h1>E-VOTING</h1>
+                <p>Secure Online Voting System</p>
+            </div>
+            
+            <div id="alert" class="alert"></div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <input type="email" id="email" placeholder="Email Address" required>
+                </div>
+                
+                <div class="form-group">
+                    <input type="password" id="password" placeholder="Password" required>
+                </div>
+                
+                <button type="submit">LOGIN</button>
+            </form>
+            
+            <p class="register-link">
+                New Voter? <a href="register.html">Register here</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Hidden debug panel - press Ctrl+Shift+D to show -->
+    <div id="debugPanel" class="debug-panel">
+        <!-- This panel is hidden by default -->
+    </div>
+
+    <script>
+        // Demo accounts (hidden in code, not displayed to users)
+        const DEMO_ACCOUNTS = {
+            admin: { email: 'admin@evoting.com', password: 'admin123' },
+            staff: { email: 'staff@evoting.com', password: 'staff123' },
+            voter: { email: 'voter@example.com', password: 'voter123' }
+        };
+
+        // Secret key combination to autofill admin (for development only)
+        let keyBuffer = [];
+        const secretCode = 'admin';
+
+        document.addEventListener('keydown', (e) => {
+            // Track key presses for secret code
+            keyBuffer.push(e.key.toLowerCase());
+            if (keyBuffer.length > secretCode.length) {
+                keyBuffer.shift();
+            }
+            
+            // Check if secret code is typed
+            if (keyBuffer.join('') === secretCode) {
+                // Autofill admin credentials
+                document.getElementById('email').value = DEMO_ACCOUNTS.admin.email;
+                document.getElementById('password').value = DEMO_ACCOUNTS.admin.password;
+                
+                // Optional: Show brief notification
+                const alert = document.getElementById('alert');
+                alert.textContent = 'Admin credentials loaded';
+                alert.className = 'alert alert-success';
+                alert.style.display = 'block';
+                setTimeout(() => {
+                    alert.style.display = 'none';
+                }, 2000);
+            }
+        });
+
+        // Secret double-click on logo for staff login
+        let logoClickCount = 0;
+        let logoClickTimer;
+
+        document.querySelector('.logo').addEventListener('click', () => {
+            logoClickCount++;
+            
+            if (logoClickCount === 1) {
+                logoClickTimer = setTimeout(() => {
+                    logoClickCount = 0;
+                }, 500);
+            } else if (logoClickCount === 3) {
+                // Triple click on logo loads staff credentials
+                clearTimeout(logoClickTimer);
+                logoClickCount = 0;
+                
+                document.getElementById('email').value = DEMO_ACCOUNTS.staff.email;
+                document.getElementById('password').value = DEMO_ACCOUNTS.staff.password;
+                
+                const alert = document.getElementById('alert');
+                alert.textContent = 'Staff credentials loaded';
+                alert.className = 'alert alert-success';
+                alert.style.display = 'block';
+                setTimeout(() => {
+                    alert.style.display = 'none';
+                }, 2000);
+            }
+        });
+
+        // Secret right-click on register link for voter login
+        document.querySelector('.register-link a').addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            
+            document.getElementById('email').value = DEMO_ACCOUNTS.voter.email;
+            document.getElementById('password').value = DEMO_ACCOUNTS.voter.password;
+            
+            const alert = document.getElementById('alert');
+            alert.textContent = 'Voter credentials loaded';
+            alert.className = 'alert alert-success';
+            alert.style.display = 'block';
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 2000);
+        });
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const alert = document.getElementById('alert');
+            alert.style.display = 'none';
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            // Show loading state
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'LOGGING IN...';
+            submitBtn.disabled = true;
+            
+            try {
+                console.log('Attempting login with:', email);
+                
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                console.log('Login response:', data);
+                
+                if (response.ok) {
+                    // Store token and user data
+                    localStorage.setItem('token', data.access_token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    alert.textContent = 'Login successful! Redirecting...';
+                    alert.className = 'alert alert-success';
+                    alert.style.display = 'block';
+                    
+                    // Redirect based on role
+                   // Redirect based on role
+setTimeout(() => {
+    if (data.user.role === 'admin') {
+        window.location.href = '/admin-dashboard.html';
+    } else if (data.user.role === 'staff') {
+        window.location.href = '/staff-dashboard.html';
+    } else {
+        window.location.href = '/voter-dashboard.html';
+    }
+}, 1000);
+                } else {
+                    alert.textContent = data.message || 'Invalid credentials';
+                    alert.className = 'alert alert-error';
+                    alert.style.display = 'block';
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                alert.textContent = 'Connection error. Please make sure the server is running.';
+                alert.className = 'alert alert-error';
+                alert.style.display = 'block';
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
