@@ -63,6 +63,7 @@ import { ElectionsController } from './elections/elections.controller';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'frontend'),
       serveRoot: '/',
+      exclude: ['/api*'], 
     }),
 
     // Feature modules
